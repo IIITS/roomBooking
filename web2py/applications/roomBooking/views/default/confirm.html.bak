@@ -1,0 +1,23 @@
+{{extend 'layout.html'}}
+<body style="background-color:grey;">
+    
+
+<div style="padding-top:3%;text-align:center;margin-left:30%;margin-top:10%;margin-right:30%;font-size:200%;background-color:white;padding-bottom:3%">
+    <div >
+
+    DO YOU WANT TO CONFIRM BOOKING?
+        
+    </div>
+        <div style="padding-left:3%;width:100%;padding-top:2%">
+      <a href={{=URL('book', args=(room,start,end,subject))}}><button style="margin-right:10%">
+          OK
+          </button></a>
+   
+  <a href={{=URL('room_results', args=(e,f,g,h,i,j))}}>       <button>
+          CANCEL
+      </button></a>
+   </div>
+   
+        
+</div>
+</body>

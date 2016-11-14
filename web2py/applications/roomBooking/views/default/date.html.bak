@@ -1,0 +1,48 @@
+{{extend 'layout.html'}}
+
+<table class="small table table-striped table-hover table-border">
+    <thead>
+        <tr>
+            <th class="text-center">#</th>
+            <th>Timeslots</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{for i in range(1,6):}}
+        {{if i not in lis:}}
+        <tr bgcolor="green">
+           
+            <td class="text-center">{{=i}}</td>
+            <td>{{s=str(i+5)+":30 to "+str(i+6)+":30"}} {{=s}}</td>
+            
+            <td>
+             
+                <Button type="button" name ="book" 
+                        onclick = 'window.location="{{=URL('default', 'Book', args=[date,i])}}";'>Book</Button>
+            
+            
+                
+            
+                </td>
+ 
+        </tr>
+        {{else:}}
+        <tr bgcolor="red">
+            
+            <td class="text-center">{{=i}}</td>
+            <td>{{s=str(i+5)+":30 to "+str(i+6)+":30"}} {{=s}}</td>
+            
+            <td>
+             
+                
+            
+                 <Button class = "btn" type="button" name ="book" disabled >Book</Button>
+
+            
+                </td>
+ 
+        </tr>
+        {{pass}}
+        {{pass}}
+    </tbody>
+</table>

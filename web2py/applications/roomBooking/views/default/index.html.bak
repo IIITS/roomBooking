@@ -1,0 +1,31 @@
+{{extend 'layout.html'}}
+<!DOCTYPE html>
+<html>
+    <head>
+    <style>
+        
+    #one {
+            background-color:#99ccff;
+            text-align: right;
+            padding-top: 5px;
+            padding-right: 100px;
+            padding-bottom: 0.1%;
+            margin-top:4%;
+         }
+   
+    </style>
+    </head>
+    <body style=" background-color:black">
+  <!--   <div id ="one">
+             <div style=" float:left;margin-left:20px;margin-top:25px;">
+                 <a href="signup">
+                 <button type="button"  style="font-size:120%;" >SIGNUP</button>
+                 </a>  
+                 <a href="user">
+                 <button type="button" style="font-size:120%;margin-left:20px;" >LOGIN</button>   
+                 </a>
+             </div>
+            <h1> PASILLO</h1>
+    </div>  -->
+</body>
+</html>

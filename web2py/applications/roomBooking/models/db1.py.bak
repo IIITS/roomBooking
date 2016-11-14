@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+from gluon.utils import web2py_uuid
+
+
+
+
+
+
+db.define_table('dict',
+    Field('dictKey'),
+    Field('dictValue',type='list:integer'))
+
+
+db.define_table('room_data',
+                Field('room_no',requires=IS_NOT_EMPTY()),
+                Field('seats','integer',requires=IS_NOT_EMPTY()),
+                Field('projector',requires=IS_IN_SET(['yes','no'])),
+                Field('computers','integer',requires=IS_NOT_EMPTY()),
+                Field('Air_Conditioned',requires=IS_IN_SET(['yes','no'])),
+                auth.signature)
+
+
+db.define_table('events1',Field('room_no',requires=IS_NOT_EMPTY()),
+                Field('starts1','datetime'),
+                Field('stops1','datetime'),
+                Field('faculty','string'),
+                Field('course','string')
+                )

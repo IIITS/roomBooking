@@ -1,0 +1,17 @@
+{{extend 'layout.html'}}
+<body style="background-color:grey">
+<h1>
+     <font color="white">
+<br>
+    <br>
+    <br>
+    <br>
+    
+  <a  style="margin-right:10px " , href={{=URL('edit_room')}}>EDIT ROOM </a>
+    <br>
+    <br>
+    <br>
+  <a  style="margin-right:10px " , href={{=URL('edit_events')}}>EDIT EVENTS </a>
+    </font>
+         </h1>
+</body>

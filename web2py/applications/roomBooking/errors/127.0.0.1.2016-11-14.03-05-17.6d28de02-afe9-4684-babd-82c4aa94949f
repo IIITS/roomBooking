@@ -1,0 +1,377 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.TypeError'> 'builtin_function_or_method' object has no attribute '__getitem__'"
+p3
+sS'layer'
+p4
+S'/home/theprototype/Study_Material/web2py/applications/roomBooking/controllers/default.py'
+p5
+sS'code'
+p6
+S'import time\nimport datetime\n\n\n\n\ndef room():\n   \n    #from datetime import datetime , date\n    r=[]\n    r1=[]\n    rows = db(db.room_data).select()\n    arg = request.args(0)\n    i=0;\n    form=SQLFORM.factory(Field(\'enter_date\',\'datetime\',requires=IS_NOT_EMPTY()))\n    \n    #if form.process().accepted:\n            \n    rows1=db(db.events1.room_no==arg).select(orderby=db.events1.starts1)\n    #print rows1\n    if form.process().accepted:\n        for row in rows1:\n            #print row.starts1.date() , request.now.date()\n            x= datetime.datetime.strptime(form.vars.enter_date,"%Y-%m-%d %H:%M:%S");\n            print \'!!!!!\'\n            print x.date()\n            print row.starts1.date()\n            if(row.starts1.date() == x.date()):\n                r1.append(row)\n        \n        \n    else:\n        \n        for row in rows1:\n            #print row.starts1.date() , request.now.date()\n            if(row.starts1.date() == request.now.date()):\n                r1.append(row)\n    \n    for row in rows:\n        #print arg , row.room_no\n        if (arg==row.room_no):\n            r.append(row)\n    #print "###########3"\n    #print r1\n    return dict(rows=r,rows1=r1,form=form   )\n\ndef Book():\n    date = request.args[0]\n    bookId = request.args[1]\n    if len(db(db.dict.dictKey==date).select())>0:\n        ls = (db(db.dict.dictKey==date).select(db.dict.dictValue).as_list())\n        print ls\n        l = []\n        for i in ls:\n            print i\n            l.append[i]\n        l.append(bookId)\n        db(db.dict.update_or_insert(dictKey = date,dictValue = l))\n    else :\n        db(db.dict.update_or_insert(dictKey = date,dictValue = [bookId]))\n    print len(db(db.dict.dictKey==date).select())\n    #db(db.dict.update_or_insert(dictKey = date,dictValue = [1,2]))\n    return locals()\n\ndef date():\n    print request.args[0]\n    date = request.args[0]\n    return locals()\n\n\ndef edit_room():\n    grid = SQLFORM.grid(db.room_data)\n    return locals()\n\ndef edit_events():\n    #import time\n    #import datetime\n    #from datetime import datetime,date\n    grid = SQLFORM.grid(db.events1)\n    return locals()\ndef confirm():\n    a=request.args(0)\n    b=request.args(1)\n    c=request.args(2)\n    d=request.args(3)\n    e=request.args(4)\n    f=request.args(5)\n    g=request.args(6)\n    h=request.args(7)\n    i=request.args(8)\n    j=request.args(9)\n    \n    return dict(room=a,start=b,end=c,subject=d,e=e,f=f,g=g,h=h,i=i,j=j  );\n\ndef roomprefer():\n    form=SQLFORM.factory(Field(\'start\',\'datetime\',requires=IS_NOT_EMPTY()),\n                    Field(\'end\',\'datetime\',requires = IS_NOT_EMPTY()),\n                    Field(\'subject\',\'string\',requires = IS_NOT_EMPTY()),)\n    return locals()\n\n\n\ndef index():\n    rows = db(db.room_data).select()\n\n    return locals();\n\n\ndef user():\n    """\n    exposes:\n    http://..../[app]/default/user/login\n    http://..../[app]/default/user/logout\n    http://..../[app]/default/user/register\n    http://..../[app]/default/user/profile\n    http://..../[app]/default/user/retrieve_password\n    http://..../[app]/default/user/change_password\n    http://..../[app]/default/user/manage_users (requires membership in\n    http://..../[app]/default/user/bulk_register\n    use @auth.requires_login()\n        @auth.requires_membership(\'group name\')\n        @auth.requires_permission|(\'read\',\'table name\',record_id)\n    to decorate functions that need access control\n    """\n\n    auth.settings.login_onvalidation = []\n    return dict(form=auth())\n\n@auth.requires_login()\ndef userpreference():\n    rows2=[];\n    import time;\n    import datetime;\n    m=datetime.datetime.today()\n    form=SQLFORM.factory(Field(\'Room_number\',\'string\',requires = IS_IN_DB( db, \'room_data.room_no\' )),\n                    Field(\'From\',\'datetime\',requires = IS_DATETIME_IN_RANGE(m)),\n                    Field(\'to\',\'datetime\',requires = IS_DATETIME_IN_RANGE(m)),\n                    Field(\'subject\',\'string\',requires = IS_NOT_EMPTY()),\n                    Field(\'seats_required\',\'integer\',requires = IS_NOT_EMPTY()))\n    if(request.args(0)==\'0\'):\n        \n        form.vars.Room_number = \'room_1\'\n    else:\n        a=request.args(1)\n        args=request.args(0)\n        form.vars.seats_required=a\n        form.vars.Room_number = args\n    if form.process().accepted:\n        if form.vars.to < form.vars.From :\n            #raise error_message\n            #form.vars.to.error_message="errors"\n            response.flash=\'Oops! You have entered an invalid date\'\n        else:\n            rows = db(db.events1.room_no==form.vars.Room_number).select()\n\n            flag=True;\n            for row in rows:\n                #print row.starts1;\n                #print form.vars.from1;\n                #print type(row.starts1);\n                x= datetime.datetime.strptime(str(form.vars.From),"%Y-%m-%d %H:%M:%S");\n                #print x;\n                y= datetime.datetime.strptime(str(form.vars.to),"%Y-%m-%d %H:%M:%S");\n                print type(x);\n           \n                if  (  (  (x >row.starts1 and x< row.stops1)or(y>row.starts1 and y < row.stops1)) or ( (x <row.starts1 and x< row.stops1)and (y>row.starts1 and y > row.stops1))  ):\n                    flag=False\n        \n            redirect(URL(\'best_results\', vars=dict( a=form.vars.Room_number, b = form.vars.From , c= form.vars.to, d = form.vars.seats_required ,flag1=flag,subject=form.vars.subject  )  ))\n        \n    return locals();\n\n\n\ndef best_results():\n    rows2=[];\n    xx=[];\n    vars = request.get_vars\n    import time;\n    import datetime;\n    print vars.flag1,"000000"\n    x= datetime.datetime.strptime(vars.b,"%Y-%m-%d %H:%M:%S");\n            #print x;\n    y= datetime.datetime.strptime(vars.c,"%Y-%m-%d %H:%M:%S");\n    \n    rows1= db(vars.d <= db.room_data.seats and db.room_data.room_no!=vars.a ).select()\n    rows3= db(db.events1.id>0 and db.events1.room_no!=vars.a).select()\n    i=0;\n    xx = db(db.room_data.room_no==vars.a).select()\n    if(vars.flag1=="True"):\n        rows2.append(xx[0])\n      \n    \n    \n    for k in rows1:\n        print k.room_no\n        flag1=True\n        for row in rows3:\n            \n            if  ( (row.room_no == k.room_no) and  ((  (x >row.starts1 and x< row.stops1)or(y>row.starts1 and y < row.stops1)) or ( (x                                 <row.starts1 and x< row.stops1)and (y>row.starts1 and y > row.stops1)))):\n                flag1=False;\n                break\n                    #rows2.append( db(db.events1.id == row.id).select())\n        if flag1==True:\n            rows2.append(k);\n    print rows2;\n    return dict(result=rows2,start_time = vars.b,stop_time= vars.c,subject=vars.subject,a=vars.a,b=vars.b,c=vars.c,d=vars.d,flag1=vars.flag1,sub=vars.subject);\n\ndef room_results():\n    rows2=[];\n    xx=[];\n#   vars = request.get_vars\n    import time;\n    import datetime;\n    e=request.args(0)\n    f=request.args(1)\n    g=request.args(2)\n    h=request.args(3)\n    i=request.args(4)\n    j=request.args(5)\n    \n    f=f.replace("_"," ",1)\n    f=f.replace("_",":")\n    g=g.replace("_"," ",1)\n    g=g.replace("_",":")\n    \n#   print vars.flag1,"000000"\n    x= datetime.datetime.strptime(f,"%Y-%m-%d %H:%M:%S");\n            #print x;\n    y= datetime.datetime.strptime(g,"%Y-%m-%d %H:%M:%S");\n    \n    rows1= db(h <= db.room_data.seats and db.room_data.room_no!=e ).select()\n    rows3= db(db.events1.id>0 and db.events1.room_no!=e).select()\n    \n    xx = db(db.room_data.room_no==e).select()\n    if(i=="True"):\n        rows2.append(xx[0])\n      \n    \n    \n    for k in rows1:\n        print k.room_no\n        flag1=True\n        for row in rows3:\n            \n            if  ( (row.room_no == k.room_no) and  ((  (x >row.starts1 and x< row.stops1)or(y>row.starts1 and y < row.stops1)) or ( (x<row.starts1 and x< row.stops1)and (y>row.starts1 and y > row.stops1)))):\n                flag1=False;\n                break\n                    #rows2.append( db(db.events1.id == row.id).select())\n        if flag1==True:\n            rows2.append(k);\n    print rows2;\n    return dict(result=rows2,start_time =f,stop_time= g,subject=j,a=e,b=f,c=g,d=h,flag1=i,sub=j);\n\n\ndef show():\n    \n    a =request.args(0, cast=int )\n    b = request.args(1)\n    c = request.args(2)\n    import time;\n    import datetime;\n    \n    x= datetime.datetime.strptime(b,"%Y-%m-%d_%H_%M_%S");\n            #print x;\n    y= datetime.datetime.strptime(c,"%Y-%m-%d_%H_%M_%S");\n    db.events1.insert(room_no= a, starts1=x , stops1=y,faculty= auth.user.first_name)\n    return str(" you have successfully booked" )\n\ndef history():\n    \n    form=SQLFORM.factory(Field(\'room_number\',requires = IS_IN_DB( db, \'room_data.room_no\' )))\n    if form.process().accepted:\n        rows3= db(db.events1.faculty == auth.user.first_name  ).select()\n        r1=[]\n        for row in rows3:\n            print row.starts1.date() , request.now.date()\n            if(row.room_no==form.vars.room_number):\n                \n                if(row.starts1.date() < request.now.date()):\n                    r1.append(row)\n        \n        \n        \n        \n        \n        \n    else:\n        \n        rows3= db(db.events1.faculty == auth.user.first_name ).select()\n        r1=[]\n        for row in rows3:\n            print row.starts1.date() , request.now.date()\n            if(row.starts1.date() < request.now.date()):\n                r1.append(row)\n    \n    \n    \n    return dict(history=r1,form=form)\n\ndef upcomingevents():\n    rows3= db(db.events1.faculty == auth.user.first_name ).select()\n    r1=[]\n    for row in rows3:\n        print row.starts1.date() , request.now.date()\n        if(row.starts1.date() >= request.now.date()):\n            r1.append(row)\n    \n    \n    \n    return dict(history=r1)\n\n@auth.requires_login()\ndef loggedin():\n    return locals();\n\n\n\n\n\ndef book():\n    name= request.args(0)\n    start=request.args(1)\n    stop=request.args(2)\n    subject= request.args(3)\n    \n    start=start.replace("_"," ",1)\n    start=start.replace("_",":")\n    stop=stop.replace("_"," ",1)\n    stop=stop.replace("_",":")\n    \n    db.events1.insert(room_no=name,starts1=start,stops1=stop,faculty= auth.user.first_name,course=subject)\n    print start,stop,subject\n    return dict(a=name,b=start,c=stop,d= auth.user.first_name,e=subject);\ndef cancel():\n    arg=request.args[0]\n    del db.events1[arg]\n    redirect(URL(\'upcomingevents\'  ))\n    return\n\n\n@auth.requires_membership(\'admin\')\ndef admin():\n       return locals()\n\nresponse._vars=response._caller(Book)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__hash__'
+p12
+S"<method-wrapper '__hash__' of exceptions.TypeError object>"
+p13
+sS'__setattr__'
+p14
+S"<method-wrapper '__setattr__' of exceptions.TypeError object>"
+p15
+sS'__reduce_ex__'
+p16
+S'<built-in method __reduce_ex__ of exceptions.TypeError object>'
+p17
+sS'__getslice__'
+p18
+S"<method-wrapper '__getslice__' of exceptions.TypeError object>"
+p19
+sS'__getitem__'
+p20
+S"<method-wrapper '__getitem__' of exceptions.TypeError object>"
+p21
+sS'__setstate__'
+p22
+S'<built-in method __setstate__ of exceptions.TypeError object>'
+p23
+sS'__reduce__'
+p24
+S'<built-in method __reduce__ of exceptions.TypeError object>'
+p25
+sS'__str__'
+p26
+S"<method-wrapper '__str__' of exceptions.TypeError object>"
+p27
+sS'__format__'
+p28
+S'<built-in method __format__ of exceptions.TypeError object>'
+p29
+sS'__getattribute__'
+p30
+S"<method-wrapper '__getattribute__' of exceptions.TypeError object>"
+p31
+sS'__class__'
+p32
+S"<type 'exceptions.TypeError'>"
+p33
+sS'__unicode__'
+p34
+S'<built-in method __unicode__ of exceptions.TypeError object>'
+p35
+sS'__delattr__'
+p36
+S"<method-wrapper '__delattr__' of exceptions.TypeError object>"
+p37
+sS'__subclasshook__'
+p38
+S'<built-in method __subclasshook__ of type object>'
+p39
+sS'__repr__'
+p40
+S"<method-wrapper '__repr__' of exceptions.TypeError object>"
+p41
+sS'args'
+p42
+S'("\'builtin_function_or_method\' object has no attribute \'__getitem__\'",)'
+p43
+sS'__dict__'
+p44
+S'{}'
+p45
+sS'__sizeof__'
+p46
+S'<built-in method __sizeof__ of exceptions.TypeError object>'
+p47
+sS'__doc__'
+p48
+S"'Inappropriate argument type.'"
+p49
+sS'__init__'
+p50
+S"<method-wrapper '__init__' of exceptions.TypeError object>"
+p51
+sS'__new__'
+p52
+S'<built-in method __new__ of type object>'
+p53
+ssS'evalue'
+p54
+S"'builtin_function_or_method' object has no attribute '__getitem__'"
+p55
+sS'request'
+p56
+cgluon.html
+XML_unpickle
+p57
+(S'sIY\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">ajax</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">application</td><td style="vertical-align:top;">:</td><td><div>roomBooking</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">args</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>15-11-2016</div></td></tr><tr><td><div>1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cid</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">controller</td><td style="vertical-align:top;">:</td><td><div>default</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_admin</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-1031974b-16ea-49bd-9db7-e356fc5c258c<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_roombooking</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-86175dde-0763-4a39-9589-991969de04f0<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">env</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_ENCODING</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate, sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_LANGUAGE</td><td style="vertical-align:top;">:</td><td><div>en-GB,en-US;q=0.8,en;q=0.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CACHE_CONTROL</td><td style="vertical-align:top;">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONNECTION</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_COOKIE</td><td style="vertical-align:top;">:</td><td><div>session_id_roombooking=127.0.0.1-86175dde-0763-4a39-9589-991969de04f0; session_id_admin=127.0.0.1-1031974b-16ea-49bd-9db7-e356fc5c258c</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_HOST</td><td style="vertical-align:top;">:</td><td><div>localhost:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_REFERER</td><td style="vertical-align:top;">:</td><td><div>http://localhost:8000/roomBooking/default/date/15-11-2016</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_UPGRADE_INSECURE_REQUESTS</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_USER_AGENT</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/51.0.2704.79 Chrome/51.0.2704.79 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">PATH_INFO</td><td style="vertical-align:top;">:</td><td><div>/roomBooking/default/Book/15-11-2016/1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">QUERY_STRING</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_ADDR</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_PORT</td><td style="vertical-align:top;">:</td><td><div>48227</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_METHOD</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SCRIPT_NAME</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_NAME</td><td style="vertical-align:top;">:</td><td><div>theprototype-Aspire-4720</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PORT</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PROTOCOL</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_SOFTWARE</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/home/theprototype/Study_Material/web2py/applications/welcome/&#x27;, &#x27;/home/theprototype/Study_Material/web2py/applications/admin/&#x27;, &#x27;/home/theprototype/Study_Material/web2py/applications/roomBooking/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/home/theprototype/Study_Material/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0xb65c0fac: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;theprototype-Aspire-4720&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;port&#x27;: 8000, &#x27;print_errors&#x27;: False, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/theprototype/Study_Material/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;gae&#x27;: None, &#x27;password&#x27;: &#x27;******&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/home/theprototype/Study_Material/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_encoding</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate, sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_language</td><td style="vertical-align:top;">:</td><td><div>en-GB,en-US;q=0.8,en;q=0.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cache_control</td><td style="vertical-align:top;">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_connection</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cookie</td><td style="vertical-align:top;">:</td><td><div>session_id_roombooking=127.0.0.1-86175dde-0763-4a39-9589-991969de04f0; session_id_admin=127.0.0.1-1031974b-16ea-49bd-9db7-e356fc5c258c</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_host</td><td style="vertical-align:top;">:</td><td><div>localhost:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_referer</td><td style="vertical-align:top;">:</td><td><div>http://localhost:8000/roomBooking/default/date/15-11-2016</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_upgrade_insecure_requests</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_user_agent</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/51.0.2704.79 Chrome/51.0.2704.79 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>theprototype-Aspire-4720</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path_info</td><td style="vertical-align:top;">:</td><td><div>/roomBooking/default/Book/15-11-2016/1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">query_string</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_addr</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_port</td><td style="vertical-align:top;">:</td><td><div>48227</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_method</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_uri</td><td style="vertical-align:top;">:</td><td><div>/roomBooking/default/Book/15-11-2016/1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">script_name</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_name</td><td style="vertical-align:top;">:</td><td><div>theprototype-Aspire-4720</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_port</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_protocol</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_software</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_path</td><td style="vertical-align:top;">:</td><td><div>/home/theprototype/Study_Material/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.14.6-stable+timestamp.2016.05.10.00.21.47</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0xb74f30d0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0xb659617c&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0xad883dec&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0xb74f30d0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0xb659617c&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0xad883dec&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">extension</td><td style="vertical-align:top;">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">folder</td><td style="vertical-align:top;">:</td><td><div>/home/theprototype/Study_Material/web2py/applications/roomBooking/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">function</td><td style="vertical-align:top;">:</td><td><div>Book</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">global_settings</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/home/theprototype/Study_Material/web2py/applications/welcome/&#x27;, &#x27;/home/theprototype/Study_Material/web2py/applications/admin/&#x27;, &#x27;/home/theprototype/Study_Material/web2py/applications/roomBooking/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/home/theprototype/Study_Material/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0xb65c0fac: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;theprototype-Aspire-4720&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;port&#x27;: 8000, &#x27;print_errors&#x27;: False, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/theprototype/Study_Material/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;gae&#x27;: None, &#x27;password&#x27;: &#x27;******&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/home/theprototype/Study_Material/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>theprototype-Aspire-4720</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.14.6-stable+timestamp.2016.05.10.00.21.47</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_https</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_local</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_restful</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_scheduler</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_shell</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">now</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2016, 11, 14, 3, 5, 17, 496297)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_args</td><td style="vertical-align:top;">:</td><td><div>15-11-2016/1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_extension</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">url</td><td style="vertical-align:top;">:</td><td><div>/roomBooking/default/Book/15-11-2016/1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">utcnow</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2016, 11, 13, 21, 35, 17, 496339)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi</td><td style="vertical-align:top;">:</td><td><div>&lt;gluon.main.LazyWSGI object at 0xad6affac&gt;</div></td></tr></table></div>'
+tRp58
+sS'frames'
+p59
+(lp60
+(dp61
+S'file'
+p62
+S'/home/theprototype/Study_Material/web2py/gluon/restricted.py'
+p63
+sS'dump'
+p64
+(dp65
+S'environment'
+p66
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}"
+p67
+sS'ccode'
+p68
+S'<code object <module> at 0xadbbb188, file "/home...ions/roomBooking/controllers/default.py", line 1>'
+p69
+ssS'lnum'
+p70
+I227
+sS'lines'
+p71
+(dp72
+I224
+S'            ccode = code'
+p73
+sI225
+S'        else:'
+p74
+sI226
+S'            ccode = compile2(code, layer)'
+p75
+sI227
+S'        exec ccode in environment'
+p76
+sI228
+S'    except HTTP:'
+p77
+sI229
+S'        raise'
+p78
+sI230
+S'    except RestrictedError:'
+p79
+sI231
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p80
+sI222
+S'    try:'
+p81
+sI223
+S'        if isinstance(code, types.CodeType):'
+p82
+ssS'call'
+p83
+S"(code='import time\\nimport datetime\\n\\n\\n\\n\\ndef room():\\n   \\n... locals()\\n\\nresponse._vars=response._caller(Book)\\n', environment={'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}, layer='/home/theprototype/Study_Material/web2py/applications/roomBooking/controllers/default.py')"
+p84
+sS'func'
+p85
+S'restricted'
+p86
+sa(dp87
+g62
+S'/home/theprototype/Study_Material/web2py/applications/roomBooking/controllers/default.py'
+p88
+sg64
+(dp89
+sg70
+I346
+sg71
+(dp90
+I335
+S'def cancel():'
+p91
+sI336
+S'    arg=request.args[0]'
+p92
+sI337
+S'    del db.events1[arg]'
+p93
+sI338
+S"    redirect(URL('upcomingevents'  ))"
+p94
+sI339
+S'    return'
+p95
+sI340
+S''
+sI341
+S''
+sI342
+S"@auth.requires_membership('admin')"
+p96
+sI343
+S'def admin():'
+p97
+sI344
+S'       return locals()'
+p98
+ssg83
+S'()'
+p99
+sg85
+S'<module>'
+p100
+sa(dp101
+g62
+S'/home/theprototype/Study_Material/web2py/gluon/globals.py'
+p102
+sg64
+(dp103
+S'self'
+p104
+S'undefined'
+p105
+sS'f'
+S'<function Book>'
+p106
+ssg70
+I417
+sg71
+(dp107
+I416
+S'        self._vars = None'
+p108
+sI417
+S'        self._caller = lambda f: f()'
+p109
+sI418
+S'        self._view_environment = None'
+p110
+sI419
+S'        self._custom_commit = None'
+p111
+sI420
+S'        self._custom_rollback = None'
+p112
+sI421
+S"        self.generic_patterns = ['*']"
+p113
+sI412
+S"        self.flash = ''            # used by the default view layout"
+p114
+sI413
+S'        self.meta = Storage()      # used by web2py_ajax.html'
+p115
+sI414
+S'        self.menu = []             # used by the default view layout'
+p116
+sI415
+S'        self.files = []            # used by web2py_ajax.html'
+p117
+ssg83
+S'(f=<function Book>)'
+p118
+sg85
+S'<lambda>'
+p119
+sa(dp120
+g62
+S'/home/theprototype/Study_Material/web2py/applications/roomBooking/controllers/default.py'
+p121
+sg64
+(dp122
+S'i'
+S"{'dictValue': [1L, 2L]}"
+p123
+sS'l'
+S'[]'
+p124
+sS'l.append'
+p125
+S'<built-in method append of list object>'
+p126
+ssg70
+I56
+sg71
+(dp127
+I51
+S'        ls = (db(db.dict.dictKey==date).select(db.dict.dictValue).as_list())'
+p128
+sI52
+S'        print ls'
+p129
+sI53
+S'        l = []'
+p130
+sI54
+S'        for i in ls:'
+p131
+sI55
+S'            print i'
+p132
+sI56
+S'            l.append[i]'
+p133
+sI57
+S'        l.append(bookId)'
+p134
+sI58
+S'        db(db.dict.update_or_insert(dictKey = date,dictValue = l))'
+p135
+sI59
+S'    else :'
+p136
+sI60
+S'        db(db.dict.update_or_insert(dictKey = date,dictValue = [bookId]))'
+p137
+ssg83
+S'()'
+p138
+sg85
+S'Book'
+p139
+sasS'pyver'
+p140
+S'Python 2.7.6: /usr/bin/python (prefix: /usr)'
+p141
+sS'session'
+p142
+g57
+(S's5\x01\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">last_orderby</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_query</td><td style="vertical-align:top;">:</td><td><div>db.dict.id&gt;0</div></td></tr></table></div>'
+tRp143
+sS'etype'
+p144
+S"<type 'exceptions.TypeError'>"
+p145
+sS'date'
+p146
+S'Mon Nov 14 03:05:17 2016'
+p147
+sS'response'
+p148
+g57
+(S'sO\x1d\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">body</td><td style="vertical-align:top;">:</td><td><div>&lt;cStringIO.StringO object at 0xad8909c0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_roombooking</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-86175dde-0763-4a39-9589-991969de04f0<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div>/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">delimiters</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">files</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">form_label_separator</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">formstyle</td><td style="vertical-align:top;">:</td><td><div>bootstrap3_inline</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generic_patterns</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>*</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">google_analytics_id</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">headers</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">X-Powered-By</td><td style="vertical-align:top;">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">logo</td><td style="vertical-align:top;">:</td><td><div><a class="navbar-brand" href="/roomBooking/default/index.html" id="web2py-logo"><b>PASILLO</b>&nbsp;</a></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">menu</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div><table><tr><td><div>HOME</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/roomBooking/default/index</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">meta</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">author</td><td style="vertical-align:top;">:</td><td><div>Your Name &lt;you@example.com&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">description</td><td style="vertical-align:top;">:</td><td><div>a cool new app</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generator</td><td style="vertical-align:top;">:</td><td><div>Web2py Web Framework</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">keywords</td><td style="vertical-align:top;">:</td><td><div>web2py, python, framework</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">models_to_run</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^default/\\w+\\.py$</div></td></tr><tr><td><div>^default/Book/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">postprocessing</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_compression_level</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_expires</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_data_name</td><td style="vertical-align:top;">:</td><td><div>session_data_roombooking</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_file</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;/home/theprototype/Study_Material/web2py/applications/roomBooking/sessions/0fb/0f3/127.0.0.1-86175dde-0763-4a39-9589-991969de04f0&#x27;, mode &#x27;rb+&#x27; at 0xad81a8b8&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_filename</td><td style="vertical-align:top;">:</td><td><div>/home/theprototype/Study_Material/web2py/applications/roomBooking/sessions/127.0.0.1-86175dde-0763-4a39-9589-991969de04f0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_hash</td><td style="vertical-align:top;">:</td><td><div>10d5cb02615360fe47094ddcd4ce9bf8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-86175dde-0763-4a39-9589-991969de04f0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_name</td><td style="vertical-align:top;">:</td><td><div>session_id_roombooking</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_locked</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_masterapp</td><td style="vertical-align:top;">:</td><td><div>roomBooking</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_new</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_storage_type</td><td style="vertical-align:top;">:</td><td><div>file</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">status</td><td style="vertical-align:top;">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">subtitle</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">title</td><td style="vertical-align:top;">:</td><td><div>Roombooking</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">view</td><td style="vertical-align:top;">:</td><td><div>default/Book.html</div></td></tr></table></div>'
+tRp149
+sS'locals'
+p150
+(dp151
+S'i'
+S"{'dictValue': [1L, 2L]}"
+p152
+sg146
+S"'15-11-2016'"
+p153
+sS'l'
+S'[]'
+p154
+sS'bookId'
+p155
+S"'1'"
+p156
+sS'ls'
+p157
+S"[{'dictValue': [1L, 2L]}]"
+p158
+sssS'traceback'
+p159
+S'Traceback (most recent call last):\n  File "/home/theprototype/Study_Material/web2py/gluon/restricted.py", line 227, in restricted\n    exec ccode in environment\n  File "/home/theprototype/Study_Material/web2py/applications/roomBooking/controllers/default.py", line 346, in <module>\n  File "/home/theprototype/Study_Material/web2py/gluon/globals.py", line 417, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/theprototype/Study_Material/web2py/applications/roomBooking/controllers/default.py", line 56, in Book\n    l.append[i]\nTypeError: \'builtin_function_or_method\' object has no attribute \'__getitem__\'\n'
+p160
+s.

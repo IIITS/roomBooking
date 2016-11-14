@@ -1,0 +1,109 @@
+{{extend 'layout.html'}}
+<h2 style="text-align:center">
+    SEARCH RESULTS
+</h2>
+     <div class="col-md-10">
+        <div class="contain
+                    er-fluid">
+    <!--      <div class = "result-box">-->
+            {{ if flag1=="False" :}}
+            <h2>
+               Your choice is not available. 
+               
+            </h2>
+            <h2>
+                 These are the related searches.
+            </h2>
+            {{pass}}
+            {{count=0}}
+             {{for row in result:}}
+            {{ if flag1=="True" :}}
+            {{ if count ==0: }}
+            
+            <h2>
+                Your Prefered room
+            </h2>
+            {{pass}}
+            {{pass}}
+          <table class="small table table-striped table-hover table-border ">
+          <caption class="dark-bg"><h1 style="font-size:30px"><strong>Details of {{=row.room_no}}
+              <a href={{=URL('confirm', args=(row.room_no,start_time,stop_time,subject,a,b,c,d,flag1,sub))}}> <button style="margin-left:150px"> BOOK </button></a>
+              </strong></h1></caption>
+          
+           <tbody style="font-size:20px">
+           <tr>
+               <td class="danger">
+                  Room Name:
+              </td>
+            <!--   
+               <td class="danger">
+                  seats:
+              </td>
+            -->
+              <td class = "danger">
+                Slot Starts :
+              </td  >
+            <td class = "danger">
+                Slot Ends:
+            </td>
+                
+                <td class="danger">
+                Projector
+              </td>
+              <td class = "danger">
+                Air_Conditioned:
+              </td  >
+            <td class = "danger">
+                Computers:
+            </td>
+                
+               
+           </tr>
+              
+            <tr>
+              <td class="warning">
+                {{=row.room_no}}
+              </td>
+               <!-- <td class="warning">
+                {{=row.seats}}
+              </td>-->
+              <td class = "warning">
+                {{=start_time}}
+              </td  >
+            <td class = "warning">
+                {{=stop_time}}
+            </td>
+                
+                <td class="warning">
+                {{=row.projector}}
+              </td>
+              <td class = "warning">
+                {{=row.Air_Conditioned}}
+              </td  >
+            <td class = "warning">
+                {{=row.computers}}
+            </td>
+                
+                
+            </tr>
+            
+          </tbody>
+          </table>
+           
+           {{ if count==0:}}
+              {{ if flag1=="True": }}
+         <h2>          
+             <br>
+                       Related Searches:
+            </h2>
+         
+            <hr>
+            
+            
+            {{pass}}
+            {{pass}}
+            
+        {{ count+=1 }}
+   {{pass}}
+    </div>
+        </div>
