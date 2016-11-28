@@ -1,6 +1,6 @@
 {{extend 'layout.html'}}
 
-<table class="small table table-hover table-border">
+<table class="small table table-border">
     <thead>
         <tr>
             <th class="text-center">#</th>
@@ -10,36 +10,26 @@
     <tbody>
         {{for i in range(1,6):}}
         {{if i not in lis:}}
-        <tr bgcolor="green">
+        <tr bgcolor="#7FFF00">
            
-            <td class="text-center">{{=i}}</td>
-            <td>{{s=str(i+5)+":30 to "+str(i+6)+":30"}} {{=s}}</td>
-            
+            <td class="text-center"><b>{{=i}}</b></td>
+            <td><b>{{s=str(i+5)+":30 to "+str(i+6)+":30"}} {{=s}}</b></td>
             <td>
              
-                <Button type="button" name ="book" 
+                <Button type="button" name ="book" class="btn btn-primary btn-lg"
                         onclick = 'window.location="{{=URL('default', 'Book', args=[date,i])}}";'>Book</Button>
-            
-            
-                
-            
-                </td>
+            </td>
  
         </tr>
         {{else:}}
-        <tr bgcolor="red">
+        <tr bgcolor="#DC143C">
             
             <td class="text-center">{{=i}}</td>
-            <td>{{s=str(i+5)+":30 to "+str(i+6)+":30"}} {{=s}}</td>
+            <td><b>{{s=str(i+5)+":30 to "+str(i+6)+":30"}} {{=s}}</b></td>
             
             <td>
-             
-                
-            
-                 <Button class = "btn" type="button" name ="book" disabled >Book</Button>
-
-            
-                </td>
+                <Button type="button" name ="book" class="btn btn-primary btn-lg" disabled >Book</Button>
+            </td>
  
         </tr>
         {{pass}}
