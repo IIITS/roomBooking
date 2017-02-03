@@ -93,10 +93,9 @@ def booking(request,room_no,date_of_booking,time_id,room_id):
 		template = loader.get_template('polls/booking.html')
 		book_entry = books(room_no = room_no, email=email_id, time= time_id, date_of_booking=date_of_booking)
 		book_entry.save()
-		context = {
-			'room_no':room_no,
-			'date_of_booking':date_of_booking,
-			'email_id':email_id,
-			'time_id':time_id,
-		}
-		return HttpResponse(template.render(context,request))
+		if book_entry.save() :
+			send_mail('Room Booked','Room booked by'+request.user.first_name, email_id, ['akash.d14@iiits.in'])
+			context = {
+				'email_id':email_id,
+			}
+			return HttpResponseRedirect('/polls/'+room_id+'/'+room_no+'/'+date_of_booking)
